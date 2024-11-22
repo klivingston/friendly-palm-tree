@@ -46,6 +46,43 @@ export async function createModal(contentNodes) {
     block.remove();
   });
 
+  // Add CSS classes for li items and a tags - move to socialN.js, socialN.css
+  dialog.querySelectorAll('li').forEach((li) => {
+    li.classList.add('social-nav-item');
+    li.querySelectorAll('span.icon').forEach((icon) => {
+      if (icon.className.includes('facebook')) {
+        li.classList.add('facebook-nav-item');
+        icon.addEventListener('click', () => {
+          window.open('https://www.facebook.com/sharer/sharer.php?u=http://www.clarkcountynv.gov/', 'facebook ', 'width=500,height=500');
+        });
+      } else if (icon.className.includes('twitter')) {
+        li.classList.add('twitter-nav-item');
+        icon.addEventListener('click', () => {
+          window.open('https://www.twitter.com/intent/tweet?url=http://www.clarkcountynv.gov/', 'twitter ', 'width=500,height=500');
+        });
+      } else if (icon.className.includes('reddit')) {
+        li.classList.add('reddit-nav-item');
+        icon.addEventListener('click', () => {
+          window.open('https://www.reddit.com/submit?url=http://www.clarkcountynv.gov/', 'redit ', 'width=500,height=500');
+        });
+      }
+    });
+  });
+
+  // check to see if we have close button
+  const buttons = dialog.querySelectorAll('.button-container');
+  buttons.forEach((button) => {
+    const a = button.querySelector('a');
+    if (a && a.title.includes('Close')) {
+      // TODO: see if we need to reset the url to window.location.href
+      a.setAttribute('href', '#');
+      a.classList.add('share-close');
+      a.addEventListener('click', () => {
+        dialog.close();
+      });
+    }
+  });
+
   block.innerHTML = '';
   block.append(dialog);
 
@@ -64,7 +101,6 @@ export async function openModal(fragmentUrl) {
   const path = fragmentUrl.startsWith('http')
     ? new URL(fragmentUrl, window.location).pathname
     : fragmentUrl;
-
   const fragment = await loadFragment(path);
   const { showModal } = await createModal(fragment.childNodes);
   showModal();
